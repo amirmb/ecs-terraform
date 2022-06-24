@@ -1,0 +1,9 @@
+### setup variables
+
+rds_ca_bundle_url_sydney:   "https://s3.amazonaws.com/rds-downloads/rds-ca-2019-ap-southeast-2.pem"
+
+http_proxy: "http://PROXY_HOST:3128"
+https_proxy: "https://PROXY_HOST:3128"
+no_proxy: "localhost,127.0.01,169.254.169.254,ap-southeast-2.elb.amazonaws.com,ap-southeast-2.vpce.amazonaws.com,s3.ap-southeast-2.amazonaws.com"
+
+s3_proxy: ""

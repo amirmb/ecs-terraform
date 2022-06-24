@@ -1,0 +1,11 @@
+---
+- hosts: all
+  user: ec2-user
+  roles:
+    - rds-ca-bundle
+    - firstboot
+  become: true
+  environment:
+    - http_proxy: {{ http_proxy }}
+    - https_proxy: {{ https_proxy }}
+    - no_proxy: {{ no_proxy }}

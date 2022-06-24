@@ -1,0 +1,17 @@
+---
+  - name: Copy RDS CA bundle
+    get_url:
+      url: "{{ rds_ca_bundle_url_sydney }}"
+      dest: /etc/pki/ca-trust/source/anchors/rds-combined-ca-bundle.crt
+    register: rds_ca_bundle_downloaded
+
+  - name: Check and Update CA certificates
+    block:
+      - name: Check CA certificates
+        command: "update-ca-trust check"
+        when: rds_ca_bundle_downloaded.changed
+
+      - name: Update CA certificates
+        command: "update-ca-trust enable"
+        when: rds_ca_bundle_downloaded is changed
+    when: rds_ca_bundle_downloaded.changed 

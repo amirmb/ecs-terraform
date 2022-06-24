@@ -1,0 +1,5 @@
+export AWS_ACCOUNT_ID=$AWS_ACCOUNT_ID
+export SUBNET_ID=$SUBNET_ID
+export VPC_ID=$VPC_ID
+export PROVISIONING_PROFILE=$Provisioning_Profile
+export ENVIRONMENT=dev

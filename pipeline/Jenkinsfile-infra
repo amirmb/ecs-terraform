@@ -1,0 +1,59 @@
+pipeline {
+    agent any
+    environment {
+        HTTP_PROXY = "{env.HTTP_PROXY}"
+        HTTPS_PROXY = "{env.HTTP_PROXY}"
+        NO_PROXY = "{env.NO_PROXY}"
+        WEBHOOK_URL = "{env.WEBHOOK_URL}"
+        PROVISIONING_ROLE = "{env.PROVISIONING_ROLE}"
+    }
+    stages {
+        stage('Preparation') {
+            steps {
+                scripts {
+                    currentBuild.displayName = "#${env.BUILD_NUMBER}: ${env.APP_ENVIRONMENT} - ${env.GITHUB_TAG}"
+                    env.JOB_NAME = env.JOB_NAME.substring(env.JOB_NAME.lastIndexOf('/') + 1)
+                    env.PATH = "/usr/local/bin:${env.PATH}"
+                    env.PROVISIONING_ROLE = "${PROVISIONING_ROLE}"
+                    echo "run preparation script"
+                    make prepare_infra
+                }
+            }
+        }
+        stage('Planning Infrastructure') {
+            steps {
+                script {
+                    withAWS(role : env.PROVISIONING_ROLE)  {
+                        make plan_infra
+                    }
+                }
+            }
+        }
+        stage('Building Infrastructure') {
+            when {
+                branch 'master'
+                environment name: 'PLATFORM', value: 'Production'
+            }
+            steps {
+                script {
+                    withAWS(role : env.PROVISIONING_ROLE)  {
+                        make build_infra
+                    }
+                }
+            }
+        }
+    }
+    post {
+        always {
+            sh 'make clean'
+            echo 'Deleting Workspace'
+            deleteDir()
+        }
+        success {
+            addEmbeddableBadgeConfiguration id: "Infrastructure", subject: "deployed", status: "${env.GITHUB_TAG}", link: "${env.BUILD_URL}"
+        }
+        failure {
+            addEmbeddableBadgeConfiguration id: "Infrastructure", subject: "failed", color: "red", status: "${env.GITHUB_TAG}", link: "${env.BUILD_URL}"
+        }
+    }
+}

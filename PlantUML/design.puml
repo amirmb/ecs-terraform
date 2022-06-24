@@ -1,0 +1,6 @@
+@startuml ECS Deployment via Terrafrom
+
+!define AWSPuml https://raw.githubusercontent.com/awslabs/aws-icons-for-plantuml/v7.0/dist
+!includeurl AWSPuml/AWSCommon.puml
+
+@enduml
